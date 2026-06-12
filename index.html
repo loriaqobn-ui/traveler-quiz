@@ -1,0 +1,994 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>你需要什麼樣的旅行？｜半伴旅遊</title>
+  <meta name="description" content="六個問題，找出你真正需要的放鬆方式。半伴旅遊旅人類型測驗。">
+  <meta property="og:title" content="你需要什麼樣的旅行？｜半伴旅遊">
+  <meta property="og:description" content="六個問題，找出你真正需要的放鬆方式。">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+TC:wght@400;600&family=Noto+Sans+TC:wght@300;400;500&family=Cormorant+Garamond:ital,wght@0,300;0,400;1,300&family=DM+Sans:wght@300;400&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --amber:      #C49A3C;
+      --teal:       #1A7A6E;
+      --parchment:  #F5F0E8;
+      --mist:       #F2EDE8;
+      --ink:        #2C2416;
+      --warm-gray:  #8B7355;
+      --white:      #FFFFFF;
+    }
+
+    *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+
+    body {
+      background: var(--parchment);
+      color: var(--ink);
+      font-family: 'Noto Sans TC', 'PingFang TC', sans-serif;
+      font-weight: 300;
+      -webkit-font-smoothing: antialiased;
+      min-height: 100vh;
+    }
+
+    /* ─── Screen shell ──────────────────────── */
+    .screen { display: none; flex-direction: column; min-height: 100vh; }
+    .screen.active { display: flex; }
+
+    /* ─── INTRO ──────────────────────────────── */
+    #screen-intro {
+      align-items: center;
+      justify-content: center;
+      padding: 72px 28px;
+      text-align: center;
+    }
+
+    .intro-brand {
+      font-family: 'DM Sans', sans-serif;
+      font-weight: 300;
+      font-size: 10px;
+      letter-spacing: 0.28em;
+      text-transform: uppercase;
+      color: var(--warm-gray);
+      margin-bottom: 64px;
+    }
+
+    .intro-icon {
+      width: 72px;
+      height: 72px;
+      margin: 0 auto 44px;
+    }
+
+    .intro-headline {
+      font-family: 'jf金萱 3.1', 'Noto Serif TC', serif;
+      font-size: clamp(34px, 7vw, 56px);
+      line-height: 1.25;
+      letter-spacing: 0.04em;
+      color: var(--ink);
+      margin-bottom: 22px;
+    }
+
+    .intro-sub {
+      font-size: 14px;
+      line-height: 1.95;
+      color: var(--warm-gray);
+      max-width: 340px;
+      margin: 0 auto 56px;
+      letter-spacing: 0.02em;
+    }
+
+    .btn-start {
+      display: inline-block;
+      background: var(--ink);
+      color: var(--parchment);
+      font-family: 'Noto Serif TC', serif;
+      font-weight: 400;
+      font-size: 15px;
+      padding: 17px 56px;
+      border: none;
+      cursor: pointer;
+      letter-spacing: 0.1em;
+      transition: background 0.25s ease;
+    }
+    .btn-start:hover { background: var(--amber); }
+
+    .intro-meta {
+      margin-top: 36px;
+      font-family: 'DM Sans', sans-serif;
+      font-size: 10px;
+      letter-spacing: 0.14em;
+      color: var(--warm-gray);
+      opacity: 0.65;
+    }
+
+    /* ─── QUIZ ──────────────────────────────── */
+    #screen-quiz { position: relative; }
+
+    .progress-track {
+      position: fixed;
+      top: 0; left: 0;
+      width: 100%; height: 2px;
+      background: rgba(44,36,22,0.08);
+      z-index: 20;
+    }
+    .progress-fill {
+      height: 100%;
+      background: var(--amber);
+      transition: width 0.55s cubic-bezier(0.4,0,0.2,1);
+    }
+
+    .quiz-nav {
+      padding: 30px 52px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+    .quiz-brand {
+      font-family: 'DM Sans', sans-serif;
+      font-size: 10px;
+      letter-spacing: 0.22em;
+      text-transform: uppercase;
+      color: var(--warm-gray);
+    }
+    .quiz-counter {
+      font-family: 'Cormorant Garamond', serif;
+      font-style: italic;
+      font-size: 16px;
+      color: var(--warm-gray);
+      opacity: 0.65;
+    }
+
+    .quiz-body {
+      flex: 1;
+      display: flex;
+      align-items: center;
+      padding: 0 52px 72px;
+    }
+    .quiz-inner {
+      width: 100%;
+      max-width: 600px;
+      margin: 0 auto;
+      transition: opacity 0.25s ease, transform 0.25s ease;
+    }
+
+    .q-text {
+      font-family: 'Noto Serif TC', serif;
+      font-weight: 600;
+      font-size: clamp(18px, 2.8vw, 24px);
+      line-height: 1.6;
+      letter-spacing: 0.02em;
+      color: var(--ink);
+      margin-bottom: 32px;
+    }
+
+    .opts { list-style: none; display: flex; flex-direction: column; gap: 9px; }
+
+    .opt {
+      padding: 17px 22px;
+      background: rgba(255,255,255,0.65);
+      border: 1px solid rgba(44,36,22,0.1);
+      border-left: 2.5px solid transparent;
+      cursor: pointer;
+      font-size: 14px;
+      line-height: 1.7;
+      letter-spacing: 0.01em;
+      color: var(--ink);
+      transition: border-left-color 0.18s ease, background 0.18s ease;
+      user-select: none;
+    }
+    .opt:hover {
+      border-left-color: var(--amber);
+      background: rgba(196,154,60,0.05);
+    }
+    .opt.picked {
+      border-left-color: var(--amber);
+      background: rgba(196,154,60,0.1);
+      pointer-events: none;
+    }
+
+    /* ─── RESULT ────────────────────────────── */
+    #screen-result { position: relative; }
+
+    .result-hero {
+      background: var(--ink);
+      color: var(--parchment);
+      padding: 100px 52px 72px;
+      text-align: center;
+      position: relative;
+    }
+    .result-hero::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 50%;
+      transform: translateX(-50%);
+      width: 1px; height: 52px;
+      background: var(--amber);
+      opacity: 0.45;
+    }
+
+    .result-icon { width: 60px; height: 60px; margin: 0 auto 36px; }
+
+    .result-eyebrow {
+      font-family: 'DM Sans', sans-serif;
+      font-size: 10px;
+      letter-spacing: 0.3em;
+      text-transform: uppercase;
+      color: var(--amber);
+      margin-bottom: 18px;
+    }
+
+    .result-type {
+      font-family: 'jf金萱 3.1', 'Noto Serif TC', serif;
+      font-size: clamp(36px, 7.5vw, 62px);
+      line-height: 1.15;
+      letter-spacing: 0.06em;
+      color: var(--parchment);
+      margin-bottom: 32px;
+    }
+
+    .result-type-desc {
+      font-size: 14px;
+      line-height: 2.1;
+      color: rgba(245,240,232,0.7);
+      max-width: 460px;
+      margin: 0 auto;
+      letter-spacing: 0.01em;
+    }
+
+    .result-body {
+      padding: 64px 52px 88px;
+      max-width: 600px;
+      margin: 0 auto;
+      width: 100%;
+    }
+
+    .section-label {
+      font-family: 'DM Sans', sans-serif;
+      font-size: 10px;
+      letter-spacing: 0.26em;
+      text-transform: uppercase;
+      color: var(--amber);
+      margin-bottom: 10px;
+    }
+    .dest-en {
+      font-family: 'Cormorant Garamond', serif;
+      font-style: italic;
+      font-size: 13px;
+      letter-spacing: 0.1em;
+      color: var(--warm-gray);
+      margin-bottom: 6px;
+    }
+    .dest-zh {
+      font-family: 'jf金萱 3.1', 'Noto Serif TC', serif;
+      font-size: 28px;
+      letter-spacing: 0.05em;
+      color: var(--ink);
+      margin-bottom: 18px;
+    }
+    .dest-desc {
+      font-size: 14px;
+      line-height: 2.1;
+      color: var(--warm-gray);
+      letter-spacing: 0.01em;
+    }
+
+    .result-divider {
+      width: 32px; height: 1px;
+      background: var(--amber);
+      margin: 48px 0;
+    }
+
+    .btn-line-add {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      width: 100%;
+      padding: 18px 28px;
+      background: var(--teal);
+      color: #fff;
+      font-family: 'Noto Sans TC', sans-serif;
+      font-size: 14px;
+      letter-spacing: 0.06em;
+      text-decoration: none;
+      transition: opacity 0.2s;
+      margin-bottom: 12px;
+    }
+    .btn-line-add:hover { opacity: 0.88; }
+
+    .btn-share {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      width: 100%;
+      padding: 16px 28px;
+      background: transparent;
+      color: var(--ink);
+      font-family: 'Noto Sans TC', sans-serif;
+      font-size: 14px;
+      letter-spacing: 0.04em;
+      border: 1px solid rgba(44,36,22,0.2);
+      cursor: pointer;
+      transition: border-color 0.2s;
+    }
+    .btn-share:hover { border-color: var(--ink); }
+
+    .retake-link {
+      display: block;
+      text-align: center;
+      margin-top: 36px;
+      font-size: 12px;
+      letter-spacing: 0.06em;
+      color: var(--warm-gray);
+      cursor: pointer;
+      text-decoration: none;
+      opacity: 0.65;
+      transition: opacity 0.2s;
+    }
+    .retake-link:hover { opacity: 1; }
+
+    /* ─── Toast ─────────────────────────────── */
+    .toast {
+      position: fixed;
+      bottom: 28px; left: 50%;
+      transform: translateX(-50%) translateY(8px);
+      background: var(--ink);
+      color: var(--parchment);
+      font-family: 'Noto Sans TC', sans-serif;
+      font-size: 13px;
+      padding: 12px 22px;
+      letter-spacing: 0.04em;
+      opacity: 0;
+      transition: opacity 0.25s ease, transform 0.25s ease;
+      pointer-events: none;
+      white-space: nowrap;
+    }
+    .toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+
+    /* ─── Mobile ─────────────────────────────── */
+    @media (max-width: 620px) {
+      .quiz-nav  { padding: 22px 24px; }
+      .quiz-body { padding: 0 24px 56px; }
+      .result-hero { padding: 80px 24px 56px; }
+      .result-body { padding: 48px 24px 72px; }
+      .intro-brand { margin-bottom: 48px; }
+    }
+
+    /* ─── Share Modal ────────────────────────── */
+    .share-modal {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(44,36,22,0.88);
+      z-index: 200;
+      align-items: center;
+      justify-content: center;
+      padding: 24px;
+    }
+    .share-modal.visible { display: flex; }
+
+    .share-modal-box {
+      background: var(--parchment);
+      max-width: 360px;
+      width: 100%;
+      padding: 36px 28px 28px;
+      text-align: center;
+      position: relative;
+    }
+    .share-modal-close {
+      position: absolute;
+      top: 14px; right: 18px;
+      background: none; border: none;
+      font-size: 18px;
+      color: var(--warm-gray);
+      cursor: pointer;
+      line-height: 1;
+    }
+    .share-modal-title {
+      font-family: 'Noto Serif TC', serif;
+      font-weight: 600;
+      font-size: 14px;
+      letter-spacing: 0.06em;
+      color: var(--ink);
+      margin-bottom: 18px;
+    }
+    .share-preview {
+      width: 100%;
+      aspect-ratio: 9/16;
+      object-fit: contain;
+      border: 1px solid rgba(44,36,22,0.12);
+      margin-bottom: 20px;
+      display: block;
+    }
+    .share-modal-actions {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      margin-bottom: 14px;
+    }
+    .btn-share-direct {
+      padding: 15px;
+      background: var(--teal);
+      color: #fff;
+      border: none;
+      font-family: 'Noto Sans TC', sans-serif;
+      font-size: 14px;
+      letter-spacing: 0.06em;
+      cursor: pointer;
+      transition: opacity 0.2s;
+    }
+    .btn-share-direct:hover { opacity: 0.88; }
+    .btn-share-download {
+      padding: 14px;
+      background: transparent;
+      color: var(--ink);
+      border: 1px solid rgba(44,36,22,0.2);
+      font-family: 'Noto Sans TC', sans-serif;
+      font-size: 14px;
+      letter-spacing: 0.04em;
+      cursor: pointer;
+      transition: border-color 0.2s;
+    }
+    .btn-share-download:hover { border-color: var(--ink); }
+    .share-modal-hint {
+      font-size: 11px;
+      letter-spacing: 0.04em;
+      color: var(--warm-gray);
+      opacity: 0.75;
+    }
+  </style>
+</head>
+<body>
+
+<!-- ════════ INTRO ════════ -->
+<div id="screen-intro" class="screen active">
+  <p class="intro-brand">半伴旅遊 · P.P. TOUR</p>
+
+  <div class="intro-icon">
+    <!-- Compass – brand stroke style -->
+    <svg viewBox="0 0 72 72" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <circle cx="36" cy="36" r="26" stroke="#C49A3C" stroke-width="1.5"/>
+      <circle cx="36" cy="36" r="3.5" fill="#C49A3C"/>
+      <circle cx="36" cy="12"  r="1.8" fill="#C49A3C"/>
+      <path d="M36 22 L40 36 L36 39.5 L32 36 Z" fill="#C49A3C"/>
+      <path d="M36 50 L40 36 L36 32.5 L32 36 Z" fill="#2C2416" opacity="0.25"/>
+    </svg>
+  </div>
+
+  <h1 class="intro-headline">你需要<br>什麼樣的旅行？</h1>
+  <p class="intro-sub">六個問題，幫你想清楚你真正需要的放鬆，長什麼樣子</p>
+
+  <button class="btn-start" onclick="startQuiz()">開始測驗</button>
+  <p class="intro-meta">約 2 分鐘 · 六道題</p>
+</div>
+
+
+<!-- ════════ QUIZ ════════ -->
+<div id="screen-quiz" class="screen">
+  <div class="progress-track">
+    <div class="progress-fill" id="progressFill"></div>
+  </div>
+
+  <nav class="quiz-nav">
+    <span class="quiz-brand">半伴旅遊</span>
+    <span class="quiz-counter" id="qCounter"></span>
+  </nav>
+
+  <div class="quiz-body">
+    <div class="quiz-inner" id="quizInner">
+      <h2 class="q-text" id="qText"></h2>
+      <ul class="opts"  id="optsList"></ul>
+    </div>
+  </div>
+</div>
+
+
+<!-- ════════ RESULT ════════ -->
+<div id="screen-result" class="screen">
+  <div class="result-hero">
+    <div class="result-icon" id="resultIcon"></div>
+    <p class="result-eyebrow">你是</p>
+    <h2 class="result-type" id="resultType"></h2>
+    <p class="result-type-desc" id="resultTypeDesc"></p>
+  </div>
+
+  <div class="result-body">
+    <p class="section-label">你可能適合的旅行</p>
+    <p class="dest-en" id="destEn"></p>
+    <h3 class="dest-zh" id="destZh"></h3>
+    <p class="dest-desc" id="destDesc"></p>
+
+    <div class="result-divider"></div>
+
+    <button class="btn-line-add" onclick="openLine()">
+      <svg width="19" height="19" viewBox="0 0 19 19" fill="none">
+        <path d="M9.5 2C5.36 2 2 4.91 2 8.5c0 2.12 1.15 4.01 2.95 5.24V16l2.36-1.29A8.2 8.2 0 009.5 15c4.14 0 7.5-2.91 7.5-6.5S13.64 2 9.5 2z"
+              stroke="#fff" stroke-width="1.4" stroke-linejoin="round"/>
+        <path d="M6.5 8.5h.8M9.5 8.5h.8M12.5 8.5h.5"
+              stroke="#fff" stroke-width="1.4" stroke-linecap="round"/>
+      </svg>
+      加入半伴旅遊，看看你的行程
+    </button>
+
+    <button class="btn-share" onclick="shareResult()">
+      <svg width="17" height="17" viewBox="0 0 17 17" fill="none">
+        <circle cx="13" cy="3"   r="1.8" stroke="#2C2416" stroke-width="1.4"/>
+        <circle cx="13" cy="14"  r="1.8" stroke="#2C2416" stroke-width="1.4"/>
+        <circle cx="4"  cy="8.5" r="1.8" stroke="#2C2416" stroke-width="1.4"/>
+        <line x1="5.8" y1="7.5"  x2="11.2" y2="4"  stroke="#2C2416" stroke-width="1.4" stroke-linecap="round"/>
+        <line x1="5.8" y1="9.5"  x2="11.2" y2="13" stroke="#2C2416" stroke-width="1.4" stroke-linecap="round"/>
+      </svg>
+      製作分享圖片
+    </button>
+
+    <span class="retake-link" onclick="retakeQuiz()">重新測驗</span>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<!-- ════════ SHARE MODAL ════════ -->
+<div class="share-modal" id="shareModal">
+  <div class="share-modal-box">
+    <button class="share-modal-close" onclick="closeShareModal()">✕</button>
+    <p class="share-modal-title">你的旅人類型卡</p>
+    <img id="sharePreview" class="share-preview" alt="旅人類型分享圖">
+    <div class="share-modal-actions">
+      <button class="btn-share-direct" id="btnShareDirect" onclick="doShare()">分享到限時動態</button>
+      <button class="btn-share-download" onclick="doDownload()">下載圖片</button>
+    </div>
+    <p class="share-modal-hint">下載後可直接上傳至 IG / FB 限時動態</p>
+  </div>
+</div>
+
+
+<script>
+// ── DATA ─────────────────────────────────────────────────────────────────────
+// Type index: 0=法國  1=埃及  2=摩洛哥  3=南非  4=德國二戰  5=泰國曼谷
+
+const questions = [
+  {
+    q: "你上次真的休息到了，是什麼感覺？",
+    opts: [
+      { t: 0, text: "吃到或看到一個讓我真心喜歡的東西" },
+      { t: 1, text: "突然對某件事好奇，停不下來地查下去" },
+      { t: 2, text: "站在一個很大的地方，整個人被清空" },
+      { t: 3, text: "在大自然裡移動，腦袋裡的雜念一掃而空" },
+      { t: 4, text: "看了一部很有重量的書或紀錄片，有很多想法" },
+      { t: 5, text: "在一個熱鬧的地方穿梭，反而整個人放空了" }
+    ]
+  },
+  {
+    q: "旅行中最讓你難受的是哪一種感覺？",
+    opts: [
+      { t: 5, text: "整個行程太安靜、太慢，沒有生活氣息" },
+      { t: 2, text: "全是城市，完全看不到開闊的天空和自然" },
+      { t: 4, text: "行程很淺，走馬看花，沒辦法真正理解這個地方" },
+      { t: 0, text: "景點普通、吃的也普通，沒有任何讓我心動的" },
+      { t: 3, text: "完全是人造環境，看不到任何野生動物或原始自然" },
+      { t: 1, text: "去的地方都是當代的，沒有任何歷史縱深" }
+    ]
+  },
+  {
+    q: "難得有一整天可以自己決定，理想的早晨是？",
+    opts: [
+      { t: 3, text: "搭吉普車出去，看看有沒有機會遇到野生動物" },
+      { t: 0, text: "去一個很美的地方吃早餐，拍幾張照" },
+      { t: 5, text: "在街邊小攤吃早餐，感受當地人的日常節奏" },
+      { t: 4, text: "去一個歷史遺址或紀念館，試著理解發生過的事" },
+      { t: 1, text: "在博物館或古市集裡走走，弄清楚當地的脈絡" },
+      { t: 2, text: "去某個開闊的地方，吹風，什麼都不想" }
+    ]
+  },
+  {
+    q: "旅行結束後，你最常記得的是？",
+    opts: [
+      { t: 4, text: "一個讓我久久無法釋懷的歷史現場" },
+      { t: 5, text: "在夜市或街頭，那種活生生的人間煙火感" },
+      { t: 1, text: "突然理解了某個古文明或文化背後的邏輯" },
+      { t: 2, text: "某個讓我覺得自己很渺小的景色" },
+      { t: 0, text: "某道食物，或某個讓我說不出話的建築" },
+      { t: 3, text: "某個跟野生動物近距離接觸的瞬間" }
+    ]
+  },
+  {
+    q: "跟你旅行過的人，通常會說你是⋯⋯",
+    opts: [
+      { t: 1, text: "對古代文明特別著迷，什麼都想搞清楚是怎麼造的" },
+      { t: 3, text: "看到野生動物比看名景點還要興奮的人" },
+      { t: 5, text: "特別喜歡鑽進市場和巷弄，跟當地人一起生活" },
+      { t: 2, text: "需要戶外和大自然，城市待太久就煩躁" },
+      { t: 4, text: "把景點的歷史背景都搞清楚才肯走的人" },
+      { t: 0, text: "會主動研究哪裡好吃好看，品味有自己的要求" }
+    ]
+  },
+  {
+    q: "你最想從這趟旅行帶走的，是哪一種感覺？",
+    opts: [
+      { t: 2, text: "那種被遼闊風景讓人暫時忘記煩惱的感覺" },
+      { t: 0, text: "看到了一些真的讓人心動的美好事物" },
+      { t: 3, text: "見識到真實野性世界的震撼和謙卑感" },
+      { t: 5, text: "那種被城市的熱度和生命力感染、充飽電的感覺" },
+      { t: 1, text: "站在幾千年前就存在的地方，感受時間的縱深" },
+      { t: 4, text: "理解了某件沉重但重要的人類歷史" }
+    ]
+  }
+];
+
+const results = [
+  // 0 – 法國
+  {
+    name:     "以美充電的人",
+    desc:     "美的東西對你來說不是奢侈品，是必需品。一道好吃的食物、一個有光線感的空間、一件值得停下來看的事物——這些就是你的充電插頭。品質對你很重要，不是因為你挑剔，而是因為你懂得感受。",
+    destEn:   "FRANCE",
+    destZh:   "法國",
+    destDesc: "不是那個觀光客法國，是那個讓人覺得生活本身就是一門藝術的法國。從巴黎的咖啡館到亞爾薩斯的小鎮，你可能一整天都在吃東西和停下來看光線，然後發現這就是最好的旅行。",
+    icon: `<svg viewBox="0 0 60 60" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <rect x="18" y="24" width="22" height="17" rx="2" stroke="#C49A3C" stroke-width="1.5"/>
+      <path d="M40 28h4a4 4 0 000-8h-4" stroke="#C49A3C" stroke-width="1.5" stroke-linecap="round"/>
+      <line x1="22" y1="41" x2="38" y2="41" stroke="#C49A3C" stroke-width="1.5" stroke-linecap="round"/>
+      <path d="M25 20c0-2 4-2 4-4" stroke="#C49A3C" stroke-width="1.2" stroke-linecap="round" opacity="0.45"/>
+      <path d="M31 18c0-2 4-2 4-4" stroke="#C49A3C" stroke-width="1.2" stroke-linecap="round" opacity="0.25"/>
+    </svg>`
+  },
+  // 1 – 埃及
+  {
+    name:     "被時間尺度震撼的人",
+    desc:     "走馬看花讓你更累。你需要的旅行是能讓你帶走一些想法的那種——不只是照片，是一些讓你之後還一直在想的東西。你喜歡的不是「去過」，是「懂了一點」。",
+    destEn:   "EGYPT",
+    destZh:   "埃及",
+    destDesc: "幾千年前人類做了這些事，而你站在那裡。沒有什麼比這個更能讓大腦從日常運轉模式重新開機。歷史的尺度讓那些讓你喘不過氣的事情，突然顯得很小。",
+    icon: `<svg viewBox="0 0 60 60" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <path d="M30 10 L50 44 H10 Z" stroke="#C49A3C" stroke-width="1.5" stroke-linejoin="round"/>
+      <line x1="20" y1="44" x2="23" y2="30" stroke="#C49A3C" stroke-width="1" stroke-linecap="round" opacity="0.3"/>
+      <line x1="30" y1="44" x2="30" y2="20" stroke="#C49A3C" stroke-width="1" stroke-linecap="round" opacity="0.3"/>
+      <line x1="40" y1="44" x2="37" y2="30" stroke="#C49A3C" stroke-width="1" stroke-linecap="round" opacity="0.3"/>
+    </svg>`
+  },
+  // 2 – 摩洛哥
+  {
+    name:     "需要遼闊天空的人",
+    desc:     "城市讓你越待越窒息。你需要的是那種讓自己覺得渺小的景色——因為當你覺得自己很渺小，那些讓你喘不過氣的事情也跟著縮小了。你需要天空是真的大的地方。",
+    destEn:   "MOROCCO",
+    destZh:   "摩洛哥",
+    destDesc: "撒哈拉沙漠在等你。那裡的天空大到你沒辦法只是「看」，你會覺得整個人被包進去。從藍色古城到沙漠的邊緣，摩洛哥有一種讓人暫時忘記日常重力的力量。",
+    icon: `<svg viewBox="0 0 60 60" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <path d="M8 46 L22 22 L34 38 L42 26 L54 46Z" stroke="#C49A3C" stroke-width="1.5" stroke-linejoin="round"/>
+      <line x1="8" y1="46" x2="54" y2="46" stroke="#C49A3C" stroke-width="1" stroke-linecap="round" opacity="0.35"/>
+      <circle cx="46" cy="16" r="5" stroke="#C49A3C" stroke-width="1.2"/>
+    </svg>`
+  },
+  // 3 – 南非
+  {
+    name:     "野性讓你重啟的人",
+    desc:     "你不是不喜歡美麗的景點，你是需要被真實的野性震撼一下。活生生在眼前移動的自然，比任何景點都更讓你有感覺。大自然的節奏能讓你把工作的節奏整個洗掉。",
+    destEn:   "SOUTH AFRICA",
+    destZh:   "南非小資團",
+    destDesc: "五大野生動物就在你眼前，開著吉普車進去的那一刻，你的大腦會自動切換頻道。南非的「小資」不是降低品質——是讓更多人有機會真正進入這個世界。",
+    icon: `<svg viewBox="0 0 60 60" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <!-- Baobab tree silhouette -->
+      <line x1="30" y1="46" x2="30" y2="26" stroke="#C49A3C" stroke-width="2" stroke-linecap="round"/>
+      <path d="M30 26 Q22 20 16 24" stroke="#C49A3C" stroke-width="1.5" stroke-linecap="round"/>
+      <path d="M30 28 Q38 20 44 24" stroke="#C49A3C" stroke-width="1.5" stroke-linecap="round"/>
+      <path d="M30 30 Q24 24 20 16" stroke="#C49A3C" stroke-width="1.5" stroke-linecap="round"/>
+      <path d="M30 30 Q36 24 40 16" stroke="#C49A3C" stroke-width="1.5" stroke-linecap="round"/>
+      <path d="M30 32 Q30 24 30 14" stroke="#C49A3C" stroke-width="1.5" stroke-linecap="round"/>
+      <line x1="22" y1="46" x2="38" y2="46" stroke="#C49A3C" stroke-width="1.5" stroke-linecap="round"/>
+    </svg>`
+  },
+  // 4 – 德國二戰
+  {
+    name:     "需要搞懂世界的人",
+    desc:     "你不滿足於表面。旅行對你來說是一種理解——不只是去過，是真的想清楚這個地方發生過什麼、為什麼、之後怎樣了。這種重量感反而讓你得到了什麼。",
+    destEn:   "GERMANY · WWII",
+    destZh:   "德國二戰深度行",
+    destDesc: "歷史課從來沒辦法告訴你真正站在那裡是什麼感覺。布痕瓦爾德、柏林猶太博物館、諾曼第海灘——這些地方不是觀光，是讓你帶著問題去、帶著重量回來。",
+    icon: `<svg viewBox="0 0 60 60" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <!-- Open book -->
+      <path d="M30 16 L14 20 L14 46 L30 42 L46 46 L46 20 Z" stroke="#C49A3C" stroke-width="1.5" stroke-linejoin="round"/>
+      <line x1="30" y1="16" x2="30" y2="42" stroke="#C49A3C" stroke-width="1.5" stroke-linecap="round"/>
+      <line x1="18" y1="26" x2="28" y2="24" stroke="#C49A3C" stroke-width="1" stroke-linecap="round" opacity="0.45"/>
+      <line x1="18" y1="31" x2="28" y2="29" stroke="#C49A3C" stroke-width="1" stroke-linecap="round" opacity="0.45"/>
+      <line x1="18" y1="36" x2="28" y2="34" stroke="#C49A3C" stroke-width="1" stroke-linecap="round" opacity="0.45"/>
+      <line x1="32" y1="24" x2="42" y2="26" stroke="#C49A3C" stroke-width="1" stroke-linecap="round" opacity="0.45"/>
+      <line x1="32" y1="29" x2="42" y2="31" stroke="#C49A3C" stroke-width="1" stroke-linecap="round" opacity="0.45"/>
+      <line x1="32" y1="34" x2="42" y2="36" stroke="#C49A3C" stroke-width="1" stroke-linecap="round" opacity="0.45"/>
+    </svg>`
+  },
+  // 5 – 泰國曼谷
+  {
+    name:     "用熱鬧充電的人",
+    desc:     "大部分人旅行是為了逃離城市，但你不是。你需要的是換一個城市——一個節奏完全不一樣、讓你徹底切換頻道的地方。曼谷的熱鬧不會讓你更累，反而會用另一種方式把你充飽。",
+    destEn:   "THAILAND · BANGKOK",
+    destZh:   "泰國曼谷",
+    destDesc: "街邊的打拋豬、凌晨還在開的夜市、廟裡的靜謐和廟外的喧囂——曼谷把安靜和熱鬧放在同一個地方。這個城市的能量有一種魔力：讓你完全忘記你原來的煩惱，因為眼前太好玩了。",
+    icon: `<svg viewBox="0 0 60 60" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <!-- Temple / Stupa -->
+      <polygon points="30,10 38,28 22,28" stroke="#C49A3C" stroke-width="1.5" stroke-linejoin="round" fill="none"/>
+      <rect x="22" y="28" width="16" height="6"  rx="1" stroke="#C49A3C" stroke-width="1.5"/>
+      <rect x="18" y="34" width="24" height="5"  rx="1" stroke="#C49A3C" stroke-width="1.5"/>
+      <rect x="14" y="39" width="32" height="5"  rx="1" stroke="#C49A3C" stroke-width="1.5"/>
+      <line x1="30" y1="6"  x2="30" y2="10" stroke="#C49A3C" stroke-width="1.5" stroke-linecap="round"/>
+    </svg>`
+  }
+];
+
+// ── STATE ─────────────────────────────────────────────────────────────────────
+let qIdx        = 0;
+let scores      = [0, 0, 0, 0, 0, 0];
+let resultData  = null;
+let _cardCanvas = null;   // cached generated canvas
+
+// ── UTILS ─────────────────────────────────────────────────────────────────────
+function showScreen(id) {
+  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+function showToast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), 2800);
+}
+
+// ── LINE ──────────────────────────────────────────────────────────────────────
+function openLine() {
+  window.open('https://line.me/R/ti/p/@414wuqox', '_blank', 'noopener,noreferrer');
+}
+
+// ── QUIZ ──────────────────────────────────────────────────────────────────────
+function startQuiz() {
+  qIdx        = 0;
+  scores      = [0, 0, 0, 0, 0, 0];
+  _cardCanvas = null;
+  showScreen('screen-quiz');
+  renderQuestion();
+}
+
+function renderQuestion() {
+  const q   = questions[qIdx];
+  const pct = (qIdx / questions.length) * 100;
+
+  document.getElementById('progressFill').style.width = pct + '%';
+  document.getElementById('qCounter').textContent = `${qIdx + 1} / ${questions.length}`;
+
+  const inner = document.getElementById('quizInner');
+  inner.style.opacity   = '0';
+  inner.style.transform = 'translateY(10px)';
+
+  setTimeout(() => {
+    document.getElementById('qText').textContent = q.q;
+
+    const list = document.getElementById('optsList');
+    list.innerHTML = '';
+
+    q.opts.forEach((opt, i) => {
+      const li = document.createElement('li');
+      li.className   = 'opt';
+      li.textContent = opt.text;
+      li.style.opacity   = '0';
+      li.style.transform = 'translateY(6px)';
+      li.onclick = () => pickAnswer(opt.t, li);
+      list.appendChild(li);
+
+      setTimeout(() => {
+        li.style.transition = 'opacity 0.3s ease, transform 0.3s ease, border-left-color 0.18s ease, background 0.18s ease';
+        li.style.opacity    = '1';
+        li.style.transform  = 'translateY(0)';
+      }, i * 55);
+    });
+
+    inner.style.transition = 'opacity 0.28s ease, transform 0.28s ease';
+    inner.style.opacity    = '1';
+    inner.style.transform  = 'translateY(0)';
+  }, 140);
+}
+
+function pickAnswer(typeIdx, el) {
+  document.querySelectorAll('.opt').forEach(o => { o.onclick = null; });
+  el.classList.add('picked');
+  scores[typeIdx]++;
+
+  setTimeout(() => {
+    qIdx++;
+    if (qIdx < questions.length) {
+      renderQuestion();
+    } else {
+      showResult();
+    }
+  }, 360);
+}
+
+// ── RESULT ────────────────────────────────────────────────────────────────────
+function showResult() {
+  document.getElementById('progressFill').style.width = '100%';
+
+  const winIdx = scores.indexOf(Math.max(...scores));
+  resultData   = results[winIdx];
+
+  document.getElementById('resultIcon').innerHTML       = resultData.icon;
+  document.getElementById('resultType').textContent     = resultData.name;
+  document.getElementById('resultTypeDesc').textContent = resultData.desc;
+  document.getElementById('destEn').textContent         = resultData.destEn;
+  document.getElementById('destZh').textContent         = resultData.destZh;
+  document.getElementById('destDesc').textContent       = resultData.destDesc;
+
+  // Detect if direct file share is supported; update button label
+  const testFile = new File([''], 'test.png', { type: 'image/png' });
+  const canDirectShare = navigator.share && navigator.canShare && navigator.canShare({ files: [testFile] });
+  document.getElementById('btnShareDirect').textContent = canDirectShare
+    ? '直接分享到限時動態'
+    : '開啟分享選單';
+
+  showScreen('screen-result');
+}
+
+function retakeQuiz() { startQuiz(); }
+
+// ── SHARE MODAL ───────────────────────────────────────────────────────────────
+async function shareResult() {
+  // Generate (or reuse cached) card
+  if (!_cardCanvas) {
+    document.getElementById('btnShareDirect') && (document.querySelector('.btn-share').disabled = true);
+    _cardCanvas = await generateShareCard();
+    document.querySelector('.btn-share').disabled = false;
+  }
+
+  // Show preview modal
+  document.getElementById('sharePreview').src = _cardCanvas.toDataURL('image/png');
+  document.getElementById('shareModal').classList.add('visible');
+}
+
+function closeShareModal() {
+  document.getElementById('shareModal').classList.remove('visible');
+}
+
+async function doShare() {
+  const canvas = _cardCanvas || await generateShareCard();
+  canvas.toBlob(async (blob) => {
+    const file = new File([blob], `旅人類型_${resultData.name}.png`, { type: 'image/png' });
+    const canShare = navigator.share && navigator.canShare && navigator.canShare({ files: [file] });
+
+    if (canShare) {
+      try {
+        await navigator.share({
+          files: [file],
+          title: `我是「${resultData.name}」`,
+          text: `我測出來是「${resultData.name}」，半伴旅遊覺得我應該去${resultData.destZh}。你呢？`
+        });
+        closeShareModal();
+      } catch (e) {
+        if (e.name !== 'AbortError') doDownload();
+      }
+    } else {
+      doDownload();
+    }
+  }, 'image/png');
+}
+
+function doDownload() {
+  if (!_cardCanvas) return;
+  const url = _cardCanvas.toDataURL('image/png');
+  const a   = document.createElement('a');
+  a.href     = url;
+  a.download = `旅人類型_${resultData.name}.png`;
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+  closeShareModal();
+  showToast('圖片已下載，可上傳至限時動態');
+}
+
+// ── CANVAS CARD GENERATOR ─────────────────────────────────────────────────────
+async function generateShareCard() {
+  await document.fonts.ready;
+
+  const W = 1080, H = 1920;
+  const c = document.createElement('canvas');
+  c.width = W; c.height = H;
+  const ctx = c.getContext('2d');
+
+  // ── Background ──────────────────────────────
+  ctx.fillStyle = '#2C2416';
+  ctx.fillRect(0, 0, W, H);
+
+  // ── Top amber bar ───────────────────────────
+  ctx.fillStyle = '#C49A3C';
+  ctx.fillRect(0, 0, W, 5);
+
+  // ── Brand label ─────────────────────────────
+  ctx.textAlign  = 'center';
+  ctx.textBaseline = 'alphabetic';
+  ctx.fillStyle  = 'rgba(196,154,60,0.6)';
+  ctx.font       = '300 30px "DM Sans", sans-serif';
+  ctx.fillText('半伴旅遊  ·  P.P.TOUR', W / 2, 156);
+
+  // ── Decorative vertical line ─────────────────
+  ctx.fillStyle = 'rgba(196,154,60,0.35)';
+  ctx.fillRect(W / 2 - 1, 200, 2, 220);
+
+  // ── "你是" ──────────────────────────────────
+  ctx.fillStyle = '#C49A3C';
+  ctx.font      = '300 36px "DM Sans", sans-serif';
+  ctx.fillText('你 是', W / 2, 500);
+
+  // ── Type name ───────────────────────────────
+  ctx.fillStyle = '#F5F0E8';
+  ctx.font      = '600 96px "Noto Serif TC", serif';
+  // Scale down if too wide
+  let fontSize = 96;
+  while (ctx.measureText(resultData.name).width > W - 160 && fontSize > 60) {
+    fontSize -= 4;
+    ctx.font = `600 ${fontSize}px "Noto Serif TC", serif`;
+  }
+  ctx.fillText(resultData.name, W / 2, 640);
+
+  // ── Amber divider ───────────────────────────
+  ctx.fillStyle = '#C49A3C';
+  ctx.fillRect(W / 2 - 40, 696, 80, 2);
+
+  // ── Destination label ────────────────────────
+  ctx.fillStyle = 'rgba(196,154,60,0.65)';
+  ctx.font      = '300 30px "DM Sans", sans-serif';
+  ctx.fillText('你可能適合的旅行', W / 2, 790);
+
+  // ── Destination EN ───────────────────────────
+  ctx.fillStyle = 'rgba(245,240,232,0.4)';
+  ctx.font      = 'italic 300 32px "Cormorant Garamond", serif';
+  ctx.fillText(resultData.destEn, W / 2, 858);
+
+  // ── Destination ZH ──────────────────────────
+  ctx.fillStyle = '#F5F0E8';
+  ctx.font      = '600 80px "Noto Serif TC", serif';
+  let dFontSize = 80;
+  while (ctx.measureText(resultData.destZh).width > W - 200 && dFontSize > 50) {
+    dFontSize -= 4;
+    ctx.font = `600 ${dFontSize}px "Noto Serif TC", serif`;
+  }
+  ctx.fillText(resultData.destZh, W / 2, 980);
+
+  // ── Short description ────────────────────────
+  ctx.fillStyle = 'rgba(245,240,232,0.45)';
+  ctx.font      = '300 32px "Noto Sans TC", sans-serif';
+  wrapCanvasText(ctx, resultData.desc, W / 2, 1100, W - 200, 54, 3);
+
+  // ── Horizontal rule near bottom ───────────────
+  ctx.fillStyle = 'rgba(196,154,60,0.25)';
+  ctx.fillRect(W / 2 - 200, 1760, 400, 1);
+
+  // ── URL ──────────────────────────────────────
+  ctx.fillStyle = 'rgba(245,240,232,0.3)';
+  ctx.font      = '300 28px "DM Sans", sans-serif';
+  ctx.fillText('pptour.com.tw', W / 2, 1826);
+
+  // ── Bottom amber bar ─────────────────────────
+  ctx.fillStyle = '#C49A3C';
+  ctx.fillRect(0, H - 5, W, 5);
+
+  return c;
+}
+
+// Wrap text utility (center-aligned, max N lines)
+function wrapCanvasText(ctx, text, x, y, maxWidth, lineHeight, maxLines) {
+  let line  = '';
+  let lines = [];
+  for (let i = 0; i < text.length; i++) {
+    const test = line + text[i];
+    if (ctx.measureText(test).width > maxWidth && line !== '') {
+      lines.push(line);
+      if (lines.length >= maxLines) break;
+      line = text[i];
+    } else {
+      line = test;
+    }
+  }
+  if (lines.length < maxLines && line) lines.push(line);
+  lines.forEach((l, i) => ctx.fillText(l, x, y + i * lineHeight));
+}
+</script>
+</body>
+</html>
