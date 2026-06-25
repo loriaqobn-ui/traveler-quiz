@@ -847,6 +847,8 @@ function closeShareModal() {
   document.getElementById('shareModal').classList.remove('visible');
 }
 
+const QUIZ_URL = 'https://pptour.github.io/traveler-quiz/';
+
 async function doShare() {
   const canvas = _cardCanvas || await generateShareCard();
   canvas.toBlob(async (blob) => {
@@ -858,7 +860,8 @@ async function doShare() {
         await navigator.share({
           files: [file],
           title: `我是「${resultData.name}」`,
-          text: `我測出來是「${resultData.name}」，半伴旅遊覺得我應該去${resultData.destZh}。你呢？`
+          text: `我測出來是「${resultData.name}」，半伴旅遊覺得我應該去${resultData.destZh}。你呢？`,
+          url: QUIZ_URL
         });
         closeShareModal();
       } catch (e) {
@@ -870,17 +873,43 @@ async function doShare() {
   }, 'image/png');
 }
 
-function doDownload() {
-  if (!_cardCanvas) return;
-  const url = _cardCanvas.toDataURL('image/png');
-  const a   = document.createElement('a');
-  a.href     = url;
-  a.download = `旅人類型_${resultData.name}.png`;
-  document.body.appendChild(a);
-  a.click();
-  document.body.removeChild(a);
-  closeShareModal();
-  showToast('圖片已下載，可上傳至限時動態');
+async function doDownload() {
+  const canvas = _cardCanvas || await generateShareCard();
+  canvas.toBlob(async (blob) => {
+    const file = new File([blob], `旅人類型_${resultData.name}.png`, { type: 'image/png' });
+
+    // iOS / Android：優先用 share sheet，可直接「儲存到相簿」
+    const canShare = navigator.share && navigator.canShare && navigator.canShare({ files: [file] });
+    if (canShare) {
+      try {
+        await navigator.share({ files: [file], title: `旅人類型_${resultData.name}` });
+        closeShareModal();
+        return;
+      } catch (e) {
+        if (e.name === 'AbortError') return; // 使用者取消
+      }
+    }
+
+    // 手機備用：開新分頁，長按圖片儲存到相簿
+    const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
+    const objUrl = URL.createObjectURL(blob);
+    if (isMobile) {
+      window.open(objUrl, '_blank');
+      closeShareModal();
+      showToast('長按圖片，選「儲存到相簿」');
+    } else {
+      // 桌機：直接下載
+      const a = document.createElement('a');
+      a.href = objUrl;
+      a.download = `旅人類型_${resultData.name}.png`;
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(objUrl);
+      closeShareModal();
+      showToast('圖片已下載');
+    }
+  }, 'image/png');
 }
 
 // ── CANVAS CARD GENERATOR ─────────────────────────────────────────────────────
