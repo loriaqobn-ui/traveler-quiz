@@ -458,7 +458,7 @@
   </div>
 
   <h1 class="intro-headline">你需要<br>什麼樣的旅行？</h1>
-  <p class="intro-sub">六個問題，幫你想清楚你真正需要的放鬆，長什麼樣子</p>
+  <p class="intro-sub">六個問題<br>幫你想清楚你真正需要的放鬆長什麼樣子</p>
 
   <button class="btn-start" onclick="startQuiz()">開始測驗</button>
   <p class="intro-meta">約 2 分鐘 · 六道題</p>
@@ -954,7 +954,7 @@ async function generateShareCard() {
   // ── Short description ────────────────────────
   ctx.fillStyle = 'rgba(245,240,232,0.45)';
   ctx.font      = '300 32px "Noto Sans TC", sans-serif';
-  wrapCanvasText(ctx, resultData.desc, W / 2, 1100, W - 200, 54, 3);
+  wrapCanvasText(ctx, resultData.desc, W / 2, 1060, W - 200, 50, 5);
 
   // ── Horizontal rule near bottom ───────────────
   ctx.fillStyle = 'rgba(196,154,60,0.25)';
@@ -972,21 +972,25 @@ async function generateShareCard() {
   return c;
 }
 
-// Wrap text utility (center-aligned, max N lines)
+// Wrap text utility (center-aligned, max N lines, with ellipsis if truncated)
 function wrapCanvasText(ctx, text, x, y, maxWidth, lineHeight, maxLines) {
-  let line  = '';
-  let lines = [];
+  let line = '', lines = [], truncated = false;
   for (let i = 0; i < text.length; i++) {
     const test = line + text[i];
     if (ctx.measureText(test).width > maxWidth && line !== '') {
       lines.push(line);
-      if (lines.length >= maxLines) break;
+      if (lines.length >= maxLines) { truncated = true; break; }
       line = text[i];
     } else {
       line = test;
     }
   }
-  if (lines.length < maxLines && line) lines.push(line);
+  if (!truncated && line) lines.push(line);
+  if (truncated && lines.length > 0) {
+    let last = lines[lines.length - 1];
+    while (ctx.measureText(last + '⋯⋯').width > maxWidth && last.length > 0) last = last.slice(0, -1);
+    lines[lines.length - 1] = last + '⋯⋯';
+  }
   lines.forEach((l, i) => ctx.fillText(l, x, y + i * lineHeight));
 }
 </script>
